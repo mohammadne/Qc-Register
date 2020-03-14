@@ -9,13 +9,12 @@ class ContainerBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width - 40,
       margin: CustomPaddings.smallPadding,
       decoration: BoxDecoration(
         borderRadius: CustomBorders.normalBorderRadius,
         gradient: LinearGradient(
           colors: [
-            Colors.black26,
+            Colors.grey.shade400,
             Colors.white,
           ],
           stops: [0.0, 1.0],
@@ -27,6 +26,7 @@ class ContainerBox extends StatelessWidget {
           strokeWidth: 3,
           radius: 10,
           gradient: CustomGradient.gradient,
+          height: children.length * CustomSize.itemSizes,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: children,

@@ -17,16 +17,17 @@ class CustomColors {
 }
 
 class CustomSize {
-  static const double titleHeight = 70;
+  static const double titleHeight = 70.0;
+  static const double itemSizes = 60.0;
 }
 
 class CustomGradient {
-  static const gradient = LinearGradient(
+  static final gradient = LinearGradient(
     colors: [
-      Colors.black54,
-      Colors.white70,
-      Colors.black54,
-      Colors.white70,
+      Colors.grey[700],
+      Colors.grey[700],
+      Colors.grey[700],
+      Colors.grey[700],
     ],
   );
 }

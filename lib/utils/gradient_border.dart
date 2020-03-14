@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:qc_register/utils/sizing.dart';
 
 class UnicornOutlineButton extends StatelessWidget {
   final _GradientPainter _painter;
   final Widget _child;
   final VoidCallback _callback;
   final double _radius;
+  final double height;
 
   UnicornOutlineButton({
     @required double strokeWidth,
@@ -12,6 +14,7 @@ class UnicornOutlineButton extends StatelessWidget {
     @required Gradient gradient,
     @required Widget child,
     VoidCallback onPressed,
+    this.height,
   })  : this._painter = _GradientPainter(
             strokeWidth: strokeWidth, radius: radius, gradient: gradient),
         this._child = child,
@@ -22,24 +25,18 @@ class UnicornOutlineButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, constraint) {
-        print(constraint.maxHeight.toString() + '*****');
-        print(constraint.minHeight.toString() + '------');
         return Container(
-          height: 200,
+          height: height,
           child: CustomPaint(
             painter: _painter,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(_radius),
-              onTap: _callback,
-              child: Container(
-                constraints: BoxConstraints(minWidth: 88, minHeight: 48),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    _child,
-                  ],
-                ),
+            child: Container(
+              constraints: BoxConstraints(minWidth: 88, minHeight: 48),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _child,
+                ],
               ),
             ),
           ),
