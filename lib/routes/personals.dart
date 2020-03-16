@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:qc_register/routes/owner_type.dart';
-import 'package:qc_register/utils/container_box.dart';
+import 'package:provider/provider.dart';
+import 'package:qc_register/provider/personal.dart';
+import 'package:qc_register/routes/personal.dart';
 import 'package:qc_register/utils/route_template.dart';
-import 'package:qc_register/utils/sizing.dart';
-import 'package:qc_register/utils/text_field.dart';
 
-class PersonalDataRoute extends StatefulWidget {
+
+class PersonalsRoute extends StatefulWidget {
   @override
-  _PersonalDataRouteState createState() => _PersonalDataRouteState();
+  _PersonalsRouteState createState() => _PersonalsRouteState();
 }
 
-class _PersonalDataRouteState extends State<PersonalDataRoute> {
-  List<OwnerType> ownerType = [
-    OwnerType(title: "مالک"),
-  ];
-
+class _PersonalsRouteState extends State<PersonalsRoute> {
   @override
   Widget build(BuildContext context) {
+    final personalProvider = Provider.of<PersonalProvider>(context);
     return RouteTemplateUtil(
       text: "اطلاعات فردی مالک",
       children: [
-        ...ownerType,
+        ...personalProvider.personals.map((OwnerModel ownerModel) {
+          return PersonalRoute(ownerModel);
+        }).toList(),
+        // ...ownerType,
         Container(
-          // width: MediaQuery.of(context).size.width - 40,
           child: Row(
             children: <Widget>[
               Container(
@@ -31,11 +30,7 @@ class _PersonalDataRouteState extends State<PersonalDataRoute> {
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 child: InkWell(
                   child: Icon(Icons.add),
-                  onTap: () => setState(
-                    () => ownerType.add(
-                      OwnerType(title: "مالک ${ownerType.length+1}"),
-                    ),
-                  ),
+                  onTap: () => personalProvider.addToLastPersonals(),
                 ),
               ),
               Container(
@@ -44,7 +39,7 @@ class _PersonalDataRouteState extends State<PersonalDataRoute> {
                 padding: EdgeInsets.symmetric(horizontal: 5),
                 child: InkWell(
                   child: Icon(Icons.delete),
-                  onTap: () => setState(() => ownerType.removeLast()),
+                  onTap: () => personalProvider.deleteLastPersonals(),
                 ),
               ),
             ],

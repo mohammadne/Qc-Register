@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:qc_register/provider/workshop.dart';
-import 'package:qc_register/utils/connection.dart';
 import 'package:qc_register/utils/container_box.dart';
-import 'package:qc_register/utils/error.dart';
 import 'package:qc_register/utils/route_template.dart';
 import 'package:qc_register/utils/text_field.dart';
 import 'package:qc_register/utils/waiting.dart';
@@ -15,15 +13,6 @@ class WorkShopDataRoute extends StatefulWidget {
 }
 
 class _WorkShopDataRouteState extends State<WorkShopDataRoute> {
-  final TextEditingController _workShopNameTextEditingController =
-      TextEditingController();
-
-  final TextEditingController _workShopAddressTextEditingController =
-      TextEditingController();
-
-  final FocusNode _workShopNameFocusNode = FocusNode();
-
-  final FocusNode _workShopAddressFocusNode = FocusNode();
 
   Position _currentPosition;
 
@@ -35,8 +24,6 @@ class _WorkShopDataRouteState extends State<WorkShopDataRoute> {
         ContainerBox(
           children: <Widget>[
             TextFieldUtil(
-              textEditingController: _workShopNameTextEditingController,
-              focusNode: _workShopNameFocusNode,
               errorText: "نام کارگاه خالی است",
               textInputAction: TextInputAction.next,
               hintText: "نام کارگاه",
@@ -47,8 +34,6 @@ class _WorkShopDataRouteState extends State<WorkShopDataRoute> {
         ContainerBox(
           children: <Widget>[
             TextFieldUtil(
-              textEditingController: _workShopAddressTextEditingController,
-              focusNode: _workShopAddressFocusNode,
               errorText: "آدرس کارگاه خالی است",
               textInputAction: TextInputAction.next,
               hintText: "آدرس کارگاه",
@@ -71,15 +56,15 @@ class _WorkShopDataRouteState extends State<WorkShopDataRoute> {
 
     waitingDialog(context);
 
-    await geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-      });
-    }).catchError((e) {
-      print(e);
-    });
+    for (int i = 0; i < 5; i++) {
+      try {
+        _currentPosition = await geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.best,
+        );
+      } catch (e) {
+        //TODO
+      }
+    }
 
     Provider.of<WorkShopProvider>(context, listen: false).phoneLocation =
         _currentPosition.toString();

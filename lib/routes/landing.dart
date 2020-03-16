@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:qc_register/provider/personal.dart';
+import 'package:qc_register/provider/workshop.dart';
 import 'package:qc_register/routes/Workshop_data.dart';
-import 'package:qc_register/routes/personal_data.dart';
+import 'package:qc_register/routes/personals.dart';
 import 'package:qc_register/utils/sizing.dart';
 import 'package:qc_register/utils/title.dart';
 
@@ -20,11 +23,17 @@ class LandingRoute extends StatelessWidget {
               Expanded(
                 child: ListView(
                   children: <Widget>[
-                    PersonalDataRoute(),
+                    ChangeNotifierProvider(
+                      create: (_) => PersonalProvider(),
+                      child: PersonalsRoute(),
+                    ),
                     Container(
                       padding: CustomPaddings.normalPadding,
                     ),
-                    WorkShopDataRoute(),
+                    ChangeNotifierProvider(
+                      create: (_) => WorkShopProvider(),
+                      child: WorkShopDataRoute(),
+                    ),
                     Container(
                       padding: CustomPaddings.normalPadding,
                     ),
