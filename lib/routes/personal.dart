@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qc_register/provider/personal.dart';
+import 'package:qc_register/provider/app_provider.dart';
 import 'package:qc_register/utils/container_box.dart';
 import 'package:qc_register/utils/sizing.dart';
 import 'package:qc_register/utils/text_field.dart';
 
 class PersonalRoute extends StatelessWidget {
-  final OwnerModel ownerModel;
+  final PersonalModel ownerModel;
   PersonalRoute(this.ownerModel);
 
   @override
@@ -15,7 +15,7 @@ class PersonalRoute extends StatelessWidget {
     for (var i = 0; i < ownerModel.mobsAndTels.length; i++) {
       items.putIfAbsent(i, () => ownerModel.mobsAndTels[i]);
     }
-    final int personalIndex = Provider.of<PersonalProvider>(context)
+    final int personalIndex = Provider.of<AppProvider>(context)
         .findIndexWithTitle(ownerModel.title);
     return Column(
       children: <Widget>[
@@ -23,8 +23,8 @@ class PersonalRoute extends StatelessWidget {
           children: <Widget>[
             TextFieldUtil(
               hintText: ownerModel.title,
-              submit: (String input) =>
-                  Provider.of<PersonalProvider>(context, listen: false)
+              onChanged: (String input) =>
+                  Provider.of<AppProvider>(context, listen: false)
                       .editPersonalIndex(
                 index: personalIndex,
                 personalName: input,
@@ -87,8 +87,9 @@ class PersonalRoute extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.symmetric(horizontal: 30),
                     child: InkWell(
-                      onTap: () => Provider.of<PersonalProvider>(context)
-                          .addMobsAndTelsToPersonalIndex(personalIndex),
+                      onTap: () =>
+                          Provider.of<AppProvider>(context, listen: false)
+                              .addMobsAndTelsToPersonalIndex(personalIndex),
                       child: Icon(Icons.add),
                     ),
                   ),
@@ -96,7 +97,7 @@ class PersonalRoute extends StatelessWidget {
                     height: 40,
                     width: 40,
                     child: InkWell(
-                      onTap: () => Provider.of<PersonalProvider>(context)
+                      onTap: () => Provider.of<AppProvider>(context , listen: false)
                           .deleteMobsAndTelsAtPersonalIndex(personalIndex),
                       child: Icon(Icons.delete),
                     ),
@@ -121,12 +122,11 @@ class BuildContactPhone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PersonalProvider personalProvider =
-        Provider.of<PersonalProvider>(context);
     IconData iconData;
     try {
-      iconData = personalProvider
-              .personals[personalIndex].mobsAndTels[mobsOrTelsIndex]
+      iconData = Provider.of<AppProvider>(context)
+              .personals[personalIndex]
+              .mobsAndTels[mobsOrTelsIndex]
               .startsWith("09")
           ? Icons.phone_android
           : Icons.call;
@@ -152,7 +152,7 @@ class BuildContactPhone extends StatelessWidget {
               cursorColor: Colors.black,
               decoration: InputDecoration.collapsed(hintText: ""),
               onChanged: (String text) =>
-                  Provider.of<PersonalProvider>(context, listen: false)
+                  Provider.of<AppProvider>(context, listen: false)
                       .editPersonalIndex(
                 index: personalIndex,
                 mobOrTelIndex: mobsOrTelsIndex,

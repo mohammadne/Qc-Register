@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import 'package:qc_register/provider/workshop.dart';
+import 'package:qc_register/provider/app_provider.dart';
 import 'package:qc_register/utils/container_box.dart';
 import 'package:qc_register/utils/route_template.dart';
 import 'package:qc_register/utils/text_field.dart';
 import 'package:qc_register/utils/waiting.dart';
 
-class WorkShopDataRoute extends StatefulWidget {
+class WorkShopRoute extends StatefulWidget {
   @override
-  _WorkShopDataRouteState createState() => _WorkShopDataRouteState();
+  _WorkShopRouteState createState() => _WorkShopRouteState();
 }
 
-class _WorkShopDataRouteState extends State<WorkShopDataRoute> {
-
+class _WorkShopRouteState extends State<WorkShopRoute> {
   Position _currentPosition;
 
   @override
@@ -24,20 +23,20 @@ class _WorkShopDataRouteState extends State<WorkShopDataRoute> {
         ContainerBox(
           children: <Widget>[
             TextFieldUtil(
-              errorText: "نام کارگاه خالی است",
-              textInputAction: TextInputAction.next,
               hintText: "نام کارگاه",
-              submit: (String input) {},
+              onChanged: (String input) =>
+                  Provider.of<AppProvider>(context, listen: false)
+                      .editWorkShop(workShopName: input),
             ),
           ],
         ),
         ContainerBox(
           children: <Widget>[
             TextFieldUtil(
-              errorText: "آدرس کارگاه خالی است",
-              textInputAction: TextInputAction.next,
               hintText: "آدرس کارگاه",
-              submit: (String input) {},
+              onChanged: (String input) =>
+                  Provider.of<AppProvider>(context, listen: false)
+                      .editWorkShop(workhopAddress: input),
             ),
             RaisedButton.icon(
               icon: Icon(Icons.map),
@@ -62,12 +61,14 @@ class _WorkShopDataRouteState extends State<WorkShopDataRoute> {
           desiredAccuracy: LocationAccuracy.best,
         );
       } catch (e) {
-        //TODO
+        print(e);
       }
     }
 
-    Provider.of<WorkShopProvider>(context, listen: false).phoneLocation =
-        _currentPosition.toString();
+    Provider.of<AppProvider>(context, listen: false).editWorkShop(
+      locationSystem: _currentPosition.toString()
+    );
+
 
     // return internetConnection().then(
     //   (bool connection) async {

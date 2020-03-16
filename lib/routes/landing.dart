@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qc_register/provider/personal.dart';
-import 'package:qc_register/provider/workshop.dart';
-import 'package:qc_register/routes/Workshop_data.dart';
+import 'package:qc_register/provider/app_provider.dart';
 import 'package:qc_register/routes/personals.dart';
 import 'package:qc_register/utils/sizing.dart';
 import 'package:qc_register/utils/title.dart';
+
+import 'Workshop.dart';
 
 class LandingRoute extends StatelessWidget {
   @override
@@ -20,24 +20,21 @@ class LandingRoute extends StatelessWidget {
                 padding: CustomPaddings.normalPadding,
                 child: TitleUtil(),
               ),
-              Expanded(
-                child: ListView(
-                  children: <Widget>[
-                    ChangeNotifierProvider(
-                      create: (_) => PersonalProvider(),
-                      child: PersonalsRoute(),
-                    ),
-                    Container(
-                      padding: CustomPaddings.normalPadding,
-                    ),
-                    ChangeNotifierProvider(
-                      create: (_) => WorkShopProvider(),
-                      child: WorkShopDataRoute(),
-                    ),
-                    Container(
-                      padding: CustomPaddings.normalPadding,
-                    ),
-                  ],
+              ChangeNotifierProvider(
+                create: (_) => AppProvider(),
+                child: Expanded(
+                  child: ListView(
+                    children: <Widget>[
+                      PersonalsRoute(),
+                      Container(
+                        padding: CustomPaddings.normalPadding,
+                      ),
+                      WorkShopRoute(),
+                      Container(
+                        padding: CustomPaddings.normalPadding,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

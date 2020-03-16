@@ -1,22 +1,18 @@
 import 'package:flutter/foundation.dart';
 
-class PersonalProvider with ChangeNotifier {
-  List<OwnerModel> _personals = [
-    OwnerModel(title: "مالک :"),
+class AppProvider with ChangeNotifier {
+  List<PersonalModel> _personals = [
+    PersonalModel(title: "مالک :"),
   ];
+  WorkShopModel _workShop = WorkShopModel();
 
+  List<PersonalModel> get personals => _personals;
   int get personalsLength => _personals.length;
-
-  List<OwnerModel> get personals => _personals;
-
-  // PersonalProvider findByTitle({@required String title}) {
-  //   return _pesonals
-  //       .firstWhere((PersonalProvider persProv) => title == persProv.title);
-  // }
+  WorkShopModel get workShop => _workShop;
 
   void addToLastPersonals() {
     _personals.add(
-      OwnerModel(
+      PersonalModel(
         title: "مالک $personalsLength :",
       ),
     );
@@ -42,8 +38,8 @@ class PersonalProvider with ChangeNotifier {
     }
   }
 
-  int findIndexWithTitle(String title) =>
-      _personals.indexWhere((OwnerModel personal) => personal.title == title);
+  int findIndexWithTitle(String title) => _personals
+      .indexWhere((PersonalModel personal) => personal.title == title);
 
   editPersonalIndex({
     @required int index,
@@ -60,14 +56,33 @@ class PersonalProvider with ChangeNotifier {
           mobOrTel ?? _personals[index].mobsAndTels[mobOrTelIndex];
     }
   }
+
+  editWorkShop({
+    String workShopName,
+    String workhopAddress,
+    String locationSystem,
+    String locationManual,
+  }) {
+    _workShop.workShopName = workShopName ?? _workShop.workShopName;
+    _workShop.workhopAddress = workhopAddress ?? _workShop.workhopAddress;
+    _workShop.locationSystem = locationSystem ?? _workShop.locationSystem;
+    _workShop.locationManual = locationManual ?? _workShop.locationManual;
+  }
 }
 
-class OwnerModel {
+class PersonalModel {
   final String title;
   String personalName;
   String carrier;
   List<String> mobsAndTels = ["09", "0"];
-  OwnerModel({
+  PersonalModel({
     @required this.title,
   });
+}
+
+class WorkShopModel {
+  String workShopName;
+  String workhopAddress;
+  String locationSystem;
+  String locationManual;
 }

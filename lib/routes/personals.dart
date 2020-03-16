@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qc_register/provider/personal.dart';
+import 'package:qc_register/provider/app_provider.dart';
 import 'package:qc_register/routes/personal.dart';
 import 'package:qc_register/utils/route_template.dart';
 
@@ -13,11 +13,11 @@ class PersonalsRoute extends StatefulWidget {
 class _PersonalsRouteState extends State<PersonalsRoute> {
   @override
   Widget build(BuildContext context) {
-    final personalProvider = Provider.of<PersonalProvider>(context);
+    final personalProvider = Provider.of<AppProvider>(context);
     return RouteTemplateUtil(
       text: "اطلاعات فردی مالک",
       children: [
-        ...personalProvider.personals.map((OwnerModel ownerModel) {
+        ...personalProvider.personals.map((PersonalModel ownerModel) {
           return PersonalRoute(ownerModel);
         }).toList(),
         // ...ownerType,
