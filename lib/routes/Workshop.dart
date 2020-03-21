@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:qc_register/provider/app_provider.dart';
 import 'package:qc_register/utils/connection.dart';
@@ -8,6 +9,8 @@ import 'package:qc_register/utils/error.dart';
 import 'package:qc_register/utils/route_template.dart';
 import 'package:qc_register/utils/text_field.dart';
 import 'package:qc_register/utils/waiting.dart';
+
+import 'map.dart';
 
 class WorkShopRoute extends StatefulWidget {
   @override
@@ -74,35 +77,44 @@ class _WorkShopRouteState extends State<WorkShopRoute> {
       }
     }
 
-    Provider.of<AppProvider>(context, listen: false)
-        .editWorkShop(locationSystem: _currentPosition.toString());
+    Provider.of<AppProvider>(context, listen: false).editWorkShop(
+        locationSystem: LatLng(
+      _currentPosition.latitude,
+      _currentPosition.longitude,
+    ));
 
-    // await Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (_)=> MapRoute(initPosition : _currentPosition),
-    //   ),
-    // );
-
-    return internetConnection().then(
-      (bool connection) async {
-        if (connection) {
-          // await Provider.of<AppProvider>(context, listen: false)
-          //     .put()
-          //     .then((String message) {
-          //   Navigator.pop(context);
-          //   showErrorDialog(
-          //     context: context,
-          //     massage: message,
-          //   );
-          // });
-        } else {
-          Navigator.pop(context);
-          showErrorDialog(
-            context: context,
-            massage: "خطادر اتصال به اینترنت",
-          );
-        }
-      },
+    final val = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MapRoute(_currentPosition),
+      ),
     );
+    Navigator.of(context).pop();
+    if (val == null || val == false) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              "اطلاعات تایید نشد",
+              textAlign: TextAlign.center,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'متوجه شدم',
+                  textAlign: TextAlign.center,
+                ),
+              )
+            ],
+          );
+        },
+      );
+    }
+    if (val == true) {
+      Provider.of<AppProvider>(context, listen: false).calculateDistance();
+    }
   }
 }

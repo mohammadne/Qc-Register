@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:latlong/latlong.dart';
 
 enum Jobs { Manager, Mechanic, BatteryMaker, Smoother, Backsmith, Painter }
 const List jobsName = [
@@ -59,6 +61,16 @@ class AppProvider with ChangeNotifier {
   int findIndexWithTitle(String title) => _personals
       .indexWhere((PersonalModel personal) => personal.title == title);
 
+  calculateDistance() async {
+    double a = await Geolocator().distanceBetween(
+      _workShop.locationSystem.latitude,
+      _workShop.locationSystem.longitude,
+      _workShop.locationManual.latitude,
+      _workShop.locationManual.longitude,
+    );
+    print(a);
+  }
+
   editPersonalIndex({
     @required int index,
     String personalName,
@@ -82,8 +94,8 @@ class AppProvider with ChangeNotifier {
   editWorkShop({
     String workShopName,
     String workhopAddress,
-    String locationSystem,
-    String locationManual,
+    LatLng locationSystem,
+    LatLng locationManual,
   }) {
     _workShop.workShopName = workShopName ?? _workShop.workShopName;
     _workShop.workhopAddress = workhopAddress ?? _workShop.workhopAddress;
@@ -111,15 +123,15 @@ class AppProvider with ChangeNotifier {
                     "job_Id": jobsName[personal.carrier.index],
                     "contacts": [
                       {
-                        "value": "1232123",
+                        "value": _workShop.workhopAddress,
                         "contactType_Id": "Address",
                       },
                       {
-                        "value": "1232123",
+                        "value": _workShop.locationSystem,
                         "contactType_Id": "LocationSystem",
                       },
                       {
-                        "value": "1232123",
+                        "value": _workShop.locationManual,
                         "contactType_Id": "LocationManual",
                       },
                       ...personal.mobsAndTels.map((String val) {
@@ -169,6 +181,6 @@ class PersonalModel {
 class WorkShopModel {
   String workShopName;
   String workhopAddress;
-  String locationSystem;
-  String locationManual;
+  LatLng locationSystem;
+  LatLng locationManual;
 }
