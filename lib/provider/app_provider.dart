@@ -61,15 +61,12 @@ class AppProvider with ChangeNotifier {
   int findIndexWithTitle(String title) => _personals
       .indexWhere((PersonalModel personal) => personal.title == title);
 
-  calculateDistance() async {
-    double a = await Geolocator().distanceBetween(
-      _workShop.locationSystem.latitude,
-      _workShop.locationSystem.longitude,
-      _workShop.locationManual.latitude,
-      _workShop.locationManual.longitude,
-    );
-    print(a);
-  }
+  Future calculateDistance() async => await Geolocator().distanceBetween(
+        _workShop.locationSystem.latitude,
+        _workShop.locationSystem.longitude,
+        _workShop.locationManual.latitude,
+        _workShop.locationManual.longitude,
+      );
 
   editPersonalIndex({
     @required int index,

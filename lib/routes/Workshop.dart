@@ -95,7 +95,7 @@ class _WorkShopRouteState extends State<WorkShopRoute> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(
-              "اطلاعات تایید نشد",
+              "مکان در نقشه تایید نشد",
               textAlign: TextAlign.center,
             ),
             actions: <Widget>[
@@ -114,7 +114,32 @@ class _WorkShopRouteState extends State<WorkShopRoute> {
       );
     }
     if (val == true) {
-      Provider.of<AppProvider>(context, listen: false).calculateDistance();
+      double dist = await Provider.of<AppProvider>(context, listen: false)
+          .calculateDistance();
+      if (dist > 100) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                "مغایرت بالای 100 متر",
+                textAlign: TextAlign.center,
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'متوجه شدم',
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+            );
+          },
+        );
+      }
     }
   }
 }
