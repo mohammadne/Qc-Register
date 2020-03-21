@@ -20,21 +20,27 @@ class LandingRoute extends StatelessWidget {
                 padding: CustomPaddings.normalPadding,
                 child: TitleUtil(),
               ),
-              ChangeNotifierProvider(
-                create: (_) => AppProvider(),
-                child: Expanded(
-                  child: ListView(
-                    children: <Widget>[
-                      PersonalsRoute(),
-                      Container(
-                        padding: CustomPaddings.normalPadding,
+              Expanded(
+                child: ListView(
+                  children: <Widget>[
+                    PersonalsRoute(),
+                    Container(
+                      padding: CustomPaddings.normalPadding,
+                    ),
+                    WorkShopRoute(),
+                    Container(
+                      padding: CustomPaddings.normalPadding,
+                    ),
+                    RaisedButton(
+                      onPressed: () =>
+                          Provider.of<AppProvider>(context, listen: false)
+                              .sendData(),
+                      child: Consumer<AppProvider>(
+                        builder: (_, appProvider, ch) =>
+                            Text("تکمیل ثبت نام و ارسال اطلاعات"),
                       ),
-                      WorkShopRoute(),
-                      Container(
-                        padding: CustomPaddings.normalPadding,
-                      ),
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ),
             ],

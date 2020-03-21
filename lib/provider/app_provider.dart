@@ -1,8 +1,21 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+enum Jobs { Manager, Mechanic, BatteryMaker, Smoother, Backsmith, Painter }
+const List jobsName = [
+  "Manager",
+  "Mechanic",
+  "BatteryMaker",
+  "Smoother",
+  "Backsmith",
+  "Painter"
+];
 
 class AppProvider with ChangeNotifier {
   List<PersonalModel> _personals = [
-    PersonalModel(title: "مالک :"),
+    PersonalModel(title: "مالک :", carrier: Jobs.Manager),
   ];
   WorkShopModel _workShop = WorkShopModel();
 
@@ -12,9 +25,7 @@ class AppProvider with ChangeNotifier {
 
   void addToLastPersonals() {
     _personals.add(
-      PersonalModel(
-        title: "مالک $personalsLength :",
-      ),
+      PersonalModel(title: "مالک $personalsLength :", carrier: Jobs.Manager),
     );
     notifyListeners();
   }
@@ -38,13 +49,17 @@ class AppProvider with ChangeNotifier {
     }
   }
 
+  Jobs getJobIndex(int index) {
+    return _personals[index].carrier;
+  }
+
   int findIndexWithTitle(String title) => _personals
       .indexWhere((PersonalModel personal) => personal.title == title);
 
   editPersonalIndex({
     @required int index,
     String personalName,
-    String carrier,
+    Jobs carrier,
     int mobOrTelIndex,
     String mobOrTel,
   }) {
@@ -68,16 +83,66 @@ class AppProvider with ChangeNotifier {
     _workShop.locationSystem = locationSystem ?? _workShop.locationSystem;
     _workShop.locationManual = locationManual ?? _workShop.locationManual;
   }
+
+  Future sendData() async {
+    print("object");
+    try {
+      http.Response response = await http.post(
+        "https://workshop.dinavision.org/api/v1/Workshop/setWorkshop",
+        headers: {"content-type": "application/json"},
+        body: json.encode(
+          {
+            "name": _workShop.workShopName,
+            "people": _personals
+                .map(
+                  (PersonalModel personal) => {
+                    "fname": personal.personalName,
+                    "job_Id": jobsName[personal.carrier.index],
+                    "contacts": [
+                      {
+                        "value": "1232123",
+                        "contactType_Id": "Address",
+                      },
+                      {
+                        "value": "1232123",
+                        "contactType_Id": "LocationSystem",
+                      },
+                      {
+                        "value": "1232123",
+                        "contactType_Id": "LocationManual",
+                      },
+                      ...personal.mobsAndTels.map((String val) {
+                        return val.startsWith("09")
+                            ? {
+                                "value": val,
+                                "contactType_Id": "Mobile",
+                              }
+                            : {
+                                "value": val,
+                                "contactType_Id": "Tel",
+                              };
+                      }).toList(),
+                    ],
+                  },
+                )
+                .toList(),
+          },
+        ),
+      );
+      print(response.body);
+    } catch (e) {
+      print(e);
+      return Future.value(e.toString());
+    }
+  }
 }
 
 class PersonalModel {
   final String title;
   String personalName;
-  String carrier;
+  Jobs carrier;
   List<String> mobsAndTels = ["09", "0"];
-  PersonalModel({
-    @required this.title,
-  });
+  PersonalModel({@required this.title, @required this.carrier});
 }
 
 class WorkShopModel {

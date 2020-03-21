@@ -23,20 +23,15 @@ class ContainerBox extends StatelessWidget {
         ),
       ),
       child: UnicornOutlineButton(
-          strokeWidth: 3,
-          radius: 10,
-          gradient: CustomGradient.gradient,
-          height: children.length * CustomSize.itemSizes,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: children,
-          )
-          // child: ListView(
-          //   physics: NeverScrollableScrollPhysics(),
-          //   shrinkWrap: true,
-          //   children: children,
-          // ),
-          ),
+        strokeWidth: 3,
+        radius: 10,
+        gradient: CustomGradient.gradient,
+        height: children.length * CustomSize.itemSizes,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: children,
+        ),
+      ),
     );
   }
 }
