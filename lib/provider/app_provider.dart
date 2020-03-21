@@ -103,6 +103,44 @@ class AppProvider with ChangeNotifier {
   Future<String> sendData() async {
     sendDataState = SendDataState.Await;
     notifyListeners();
+    final body = json.encode(
+      {
+        "name": _workShop.workShopName,
+        "people": _personals
+            .map(
+              (PersonalModel personal) => {
+                "fname": personal.personalName,
+                "job_Id": jobsName[personal.carrier.index] as String,
+                "contacts": [
+                  {
+                    "value": _workShop.workhopAddress,
+                    "contactType_Id": "Address",
+                  },
+                  {
+                    "value": _workShop.locationSystem.toString(),
+                    "contactType_Id": "LocationSystem",
+                  },
+                  {
+                    "value": _workShop.locationManual.toString(),
+                    "contactType_Id": "LocationManual",
+                  },
+                  ...personal.mobsAndTels.map((String val) {
+                    return val.startsWith("09")
+                        ? {
+                            "value": val,
+                            "contactType_Id": "Mobile",
+                          }
+                        : {
+                            "value": val,
+                            "contactType_Id": "Tel",
+                          };
+                  }).toList(),
+                ],
+              },
+            )
+            .toList(),
+      },
+    );
     try {
       http.Response response = await http.post(
         "https://workshop.dinavision.org/api/v1/Workshop/setWorkshop",
@@ -110,44 +148,7 @@ class AppProvider with ChangeNotifier {
           // "Accept": "application/json",
           "content-type": "application/json; charset=utf-8",
         },
-        body: json.encode(
-          {
-            "name": _workShop.workShopName,
-            "people": _personals
-                .map(
-                  (PersonalModel personal) => {
-                    "fname": personal.personalName,
-                    "job_Id": jobsName[personal.carrier.index],
-                    "contacts": [
-                      {
-                        "value": _workShop.workhopAddress,
-                        "contactType_Id": "Address",
-                      },
-                      {
-                        "value": _workShop.locationSystem,
-                        "contactType_Id": "LocationSystem",
-                      },
-                      {
-                        "value": _workShop.locationManual,
-                        "contactType_Id": "LocationManual",
-                      },
-                      ...personal.mobsAndTels.map((String val) {
-                        return val.startsWith("09")
-                            ? {
-                                "value": val,
-                                "contactType_Id": "Mobile",
-                              }
-                            : {
-                                "value": val,
-                                "contactType_Id": "Tel",
-                              };
-                      }).toList(),
-                    ],
-                  },
-                )
-                .toList(),
-          },
-        ),
+        body: body,
       );
       print(response.statusCode);
       if (response.statusCode > 200 && response.statusCode < 300) {
@@ -162,7 +163,7 @@ class AppProvider with ChangeNotifier {
     } catch (e) {
       sendDataState = SendDataState.Failed;
       notifyListeners();
-      return Future.value(e.toString()) as String;
+      return Future.value(e.toString());
     }
   }
 }

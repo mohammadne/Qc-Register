@@ -116,7 +116,8 @@ class _WorkShopRouteState extends State<WorkShopRoute> {
     if (val == true) {
       double dist = await Provider.of<AppProvider>(context, listen: false)
           .calculateDistance();
-      if (dist > 100) {
+      if (dist > 250) {
+        print(dist);
         showDialog(
           context: context,
           builder: (BuildContext context) {
