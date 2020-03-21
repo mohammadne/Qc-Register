@@ -31,14 +31,66 @@ class LandingRoute extends StatelessWidget {
                     Container(
                       padding: CustomPaddings.normalPadding,
                     ),
-                    RaisedButton(
-                      onPressed: () =>
-                          Provider.of<AppProvider>(context, listen: false)
-                              .sendData(),
-                      child: Consumer<AppProvider>(
-                        builder: (_, appProvider, ch) =>
-                            Text("تکمیل ثبت نام و ارسال اطلاعات"),
-                      ),
+                    Consumer<AppProvider>(
+                      builder: (_, appProvider, ch) {
+                        if (appProvider.sendDataState ==
+                            SendDataState.NotPushed) {
+                          return RaisedButton(
+                            onPressed: () =>
+                                Provider.of<AppProvider>(context, listen: false)
+                                    .sendData()
+                                    .then(
+                              (String onresp) {
+                                if (onresp != null) {
+                                  print(onresp);
+                                  return showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          onresp,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text(
+                                              'متوجه شدم',
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                            ),
+                            child: Text("تکمیل ثبت نام و ارسال اطلاعات"),
+                          );
+                        } else if (appProvider.sendDataState ==
+                            SendDataState.Await) {
+                          return RaisedButton(
+                            onPressed: () {},
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (appProvider.sendDataState ==
+                            SendDataState.Seccess) {
+                          return RaisedButton(
+                            onPressed: () {},
+                            child: Text("عملیات موفقیت آمیز بود"),
+                          );
+                        } else {
+                          return RaisedButton(
+                            onPressed: () =>
+                                Provider.of<AppProvider>(context, listen: false)
+                                    .sendData(),
+                            child: Text("تلاش مجدد"),
+                          );
+                        }
+                      },
                     )
                   ],
                 ),

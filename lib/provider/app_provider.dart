@@ -13,11 +13,14 @@ const List jobsName = [
   "Painter"
 ];
 
+enum SendDataState { NotPushed, Await, Seccess, Failed }
+
 class AppProvider with ChangeNotifier {
   List<PersonalModel> _personals = [
     PersonalModel(title: "مالک :", carrier: Jobs.Manager),
   ];
   WorkShopModel _workShop = WorkShopModel();
+  SendDataState sendDataState = SendDataState.NotPushed;
 
   List<PersonalModel> get personals => _personals;
   int get personalsLength => _personals.length;
@@ -65,10 +68,14 @@ class AppProvider with ChangeNotifier {
   }) {
     _personals[index].personalName =
         personalName ?? _personals[index].personalName;
-    _personals[index].carrier = carrier ?? _personals[index].carrier;
+
     if (mobOrTelIndex != null) {
       _personals[index].mobsAndTels[mobOrTelIndex] =
           mobOrTel ?? _personals[index].mobsAndTels[mobOrTelIndex];
+    }
+    if (carrier != null) {
+      _personals[index].carrier = carrier ?? _personals[index].carrier;
+      notifyListeners();
     }
   }
 
@@ -84,12 +91,16 @@ class AppProvider with ChangeNotifier {
     _workShop.locationManual = locationManual ?? _workShop.locationManual;
   }
 
-  Future sendData() async {
-    print("object");
+  Future<String> sendData() async {
+    sendDataState = SendDataState.Await;
+    notifyListeners();
     try {
       http.Response response = await http.post(
         "https://workshop.dinavision.org/api/v1/Workshop/setWorkshop",
-        headers: {"content-type": "application/json"},
+        headers: {
+          // "Accept": "application/json",
+          "content-type": "application/json; charset=utf-8",
+        },
         body: json.encode(
           {
             "name": _workShop.workShopName,
@@ -129,10 +140,20 @@ class AppProvider with ChangeNotifier {
           },
         ),
       );
-      print(response.body);
+      print(response.statusCode);
+      if (response.statusCode > 200 && response.statusCode < 300) {
+        sendDataState = SendDataState.Seccess;
+        notifyListeners();
+        return null;
+      } else {
+        sendDataState = SendDataState.Failed;
+        notifyListeners();
+        return json.decode(response.body)["message"] as String;
+      }
     } catch (e) {
-      print(e);
-      return Future.value(e.toString());
+      sendDataState = SendDataState.Failed;
+      notifyListeners();
+      return Future.value(e.toString()) as String;
     }
   }
 }
